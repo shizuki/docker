@@ -6,5 +6,4 @@ RUN echo "ec2-user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/ec2-user
 COPY files/packages.txt /root/packages.txt
 RUN yum -y install $(cat /root/packages.txt)
 
-EXPOSE 80
-ENTRYPOINT ["/usr/sbin/httpd","-DFOREGROUND"]
+CMD "/sbin/init"
