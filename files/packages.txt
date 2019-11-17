@@ -1,3 +1,7 @@
+autoconf
+automake
+gcc-c++
+gcc-gfortran
 php
 php-cli
 php-common
