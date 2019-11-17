@@ -12,3 +12,4 @@ php-pecl
 php-pecl-zip
 php-process
 php-xml
+composer
