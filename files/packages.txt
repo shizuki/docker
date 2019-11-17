@@ -2,6 +2,7 @@ php
 php-cli
 php-common
 php-dbg
+php-devel
 php-json
 php-mbstring
 php-mysqlnd
