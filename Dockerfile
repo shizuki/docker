@@ -1,5 +1,5 @@
 FROM amazonlinux:2
-LABEL maintainer="Jun Kaneda <j.kaneda@tatsuno-system.co.jp>"
+LABEL maintainer="Jun Kaneda <shizuki17xx@gmail.com>"
 RUN yum -y install curl git sudo shadow-utils procps
 RUN amazon-linux-extras install -y epel php7.3 httpd_modules
 RUN groupadd -g 1000 ec2-user && useradd -u 1000 -g 1000 -d /home/ec2-user ec2-user
