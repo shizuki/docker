@@ -8,7 +8,7 @@ services:
     build:
       context: .
       dockerfile: ${PWD}/container/php/Dockerfile
-    user: '${CONTAINERUID}:${CONTAINERGID}'
+    # user: '${CONTAINERUID}:${CONTAINERGID}'
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: ${PWD}/container/nginx/Dockerfile
-    user: '${CONTAINERUID}:${CONTAINERGID}'
+    # user: '${CONTAINERUID}:${CONTAINERGID}'
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -35,11 +35,11 @@ services:
     restart: always
   mariadb:
     container_name: ${COMPOSE_PROJECT_NAME}_database_server
-    # image: mariadb:latest
-    build:
-      context: .
-      dockerfile: ${PWD}/container/mariadb/Dockerfile
-    user: '${CONTAINERUID}:${CONTAINERGID}'
+    image: mariadb:latest
+    # build:
+    #   context: .
+    #   dockerfile: ${PWD}/container/mariadb/Dockerfile
+    # user: '${CONTAINERUID}:${CONTAINERGID}'
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -60,7 +60,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: ${PWD}/container/minio/Dockerfile
-    # user: '${CONTAINERUID}:${CONTAINERGID}' # `user`指定なしでも`root`にならないようだ
+    # user: '${CONTAINERUID}:${CONTAINERGID}'
     ports:
       - 9000:9000
       - 9001:9001
