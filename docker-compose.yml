@@ -1,0 +1,88 @@
+# 特定のバージョンを指定し、このファイル内で使用できる文法が固定
+version: '3.9'
+
+# 起動したいコンテナを定義。
+services:
+  php:
+    container_name: "${COMPOSE_PROJECT_NAME}_php-Application_server"
+    build:
+      context: .
+      dockerfile: ${PWD}/container/php/Dockerfile
+    user: '${CONTAINERUID}:${CONTAINERGID}'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      # <ホストマシンのポート>:<コンテナのポート>
+      - 9003:9003
+    volumes:
+      - ${PWD}/src:/home/laravel-user/app
+    restart: always
+  nginx:
+    container_name: ${COMPOSE_PROJECT_NAME}-nginx_web_server
+    # image: nginx:latest
+    build:
+      context: .
+      dockerfile: ${PWD}/container/nginx/Dockerfile
+    user: '${CONTAINERUID}:${CONTAINERGID}'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 8080:80
+    volumes:
+      - ${PWD}/src/public:/home/laravel-user/app/public
+      - ${PWD}/container/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ${PWD}/container/nginx/conf.d:/etc/nginx/conf.d
+    restart: always
+  mariadb:
+    container_name: ${COMPOSE_PROJECT_NAME}_database_server
+    # image: mariadb:latest
+    build:
+      context: .
+      dockerfile: ${PWD}/container/mariadb/Dockerfile
+    user: '${CONTAINERUID}:${CONTAINERGID}'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      TZ: ${DB_TIMEZONE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_HOST}:${DB_PORT}:3306
+    volumes:
+      - ${PWD}/container/mariadb/data:/var/lib/mysql
+      - ${PWD}/container/mariadb/initdb.d:/docker-entrypoint-initdb.d
+    restart: always
+  minio:
+    container_name: ${COMPOSE_PROJECT_NAME}-object_storage_server
+    image: minio/minio:latest
+    # build:
+    #   context: .
+    #   dockerfile: ${PWD}/container/minio/Dockerfile
+    # user: '${CONTAINERUID}:${CONTAINERGID}' # `user`指定なしでも`root`にならないようだ
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_ACCESS_KEY}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY_ID}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_ACCESS_KEY}
+    entrypoint: bash
+    volumes:
+      - ${PWD}/container/minio/data:/data
+      - ${PWD}/container/minio/export:/export
+      - ${PWD}/container/minio/config:/root/.minio
+      - ${PWD}/container/minio/policies:/policies
+      - ${PWD}/container/minio/create_backet.sh:/bin/create_backet.sh
+    restart: always
+    command: -c "sh /bin/create_backet.sh"
+networks:
+  app_net:
+    name: "${COMPOSE_PROJECT_NAME}_network"
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24
