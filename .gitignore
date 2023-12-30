@@ -1,2 +1,3 @@
-/minio/config
-/minio/data
+container/minio/config
+container/minio/data
+container/mariadb/data

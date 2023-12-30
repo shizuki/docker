@@ -2,4 +2,4 @@
 
 - nginx/php-fpm共にDockerfileでUID/GID1000のユーザにて運用
 - 作成したユーザのホームディレクトリ下に公開ディレクトリを設定
-- minio/mariadbは調査中
+- minio/mariadbは調整中
