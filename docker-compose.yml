@@ -1,4 +1,4 @@
-# 特定のバージョンを指定し、このファイル内で使用できる文法が固定
+# `user: '${CONTAINERUID}:${CONTAINERGID}'`エントリは`docker:rootless`では必要ない
 version: '3.9'
 
 # 起動したいコンテナを定義。
@@ -15,22 +15,22 @@ services:
       # <ホストマシンのポート>:<コンテナのポート>
       - 9003:9003
     volumes:
-      - ${PWD}/src:/home/laravel-user/app
+      - ${PWD}/src:/var/www
     restart: always
   nginx:
     container_name: ${COMPOSE_PROJECT_NAME}-nginx_web_server
-    # image: nginx:latest
-    build:
-      context: .
-      dockerfile: ${PWD}/container/nginx/Dockerfile
+    image: nginx:latest
+    # build:
+    #   context: .
+    #   dockerfile: ${PWD}/container/nginx/Dockerfile
     # user: '${CONTAINERUID}:${CONTAINERGID}'
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - 8080:80
     volumes:
-      - ${PWD}/src/public:/home/laravel-user/app/public
-      - ${PWD}/container/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ${PWD}/src/public:/var/www/public
+    #   - ${PWD}/container/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ${PWD}/container/nginx/conf.d:/etc/nginx/conf.d
     restart: always
   mariadb:

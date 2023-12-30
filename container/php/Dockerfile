@@ -38,4 +38,4 @@ RUN ln -fs /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -fs /opt/yarn/bin/yarnpkg /usr/local/bin/yarnpkg
 
 # WORKDIR /home/laravel-user/app
-WORKDIR /var/www
+WORKDIR /var
