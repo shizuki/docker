@@ -1,0 +1,31 @@
+# `user: '${CONTAINERUID}:${CONTAINERGID}'`エントリは`docker:rootless`では必要ない
+version: '3.9'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ${PWD}/container/php/Dockerfile
+    container_name: "${PROJECT_NAME}_php-Application_server"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+  nginx:
+    build:
+      context: .
+      dockerfile: ${PWD}/container/nginx/Dockerfile
+    container_name: ${PROJECT_NAME}-nginx_web_server
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 80:80
+    restart: always
+# DB/S3等は本物の設定を使用
+networks:
+  app_net:
+    name: "${PROJECT_NAME}_network"
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24

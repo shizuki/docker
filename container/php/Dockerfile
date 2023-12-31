@@ -26,9 +26,9 @@ RUN apt-get update \
 
 COPY ./container/php/php.ini /usr/local/etc/php/php.ini
 COPY ./container/php/www.conf /usr/local/etc/php-fpm.d/ZZZ-www.conf
+COPY ./app /var/www/app
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 COPY --from=node:current-bookworm /usr/local/bin/node /usr/local/bin/
 COPY --from=node:current-bookworm /opt/yarn-* /opt/yarn
 COPY --from=node:current-bookworm /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
@@ -37,5 +37,4 @@ RUN ln -fs /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -fs /opt/yarn/bin/yarn /usr/local/bin/yarn \
     && ln -fs /opt/yarn/bin/yarnpkg /usr/local/bin/yarnpkg
 
-# WORKDIR /home/laravel-user/app
-WORKDIR /var
+WORKDIR /var/www

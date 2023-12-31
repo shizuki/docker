@@ -1,45 +1,35 @@
 # `user: '${CONTAINERUID}:${CONTAINERGID}'`エントリは`docker:rootless`では必要ない
 version: '3.9'
 
-# 起動したいコンテナを定義。
 services:
   php:
-    container_name: "${COMPOSE_PROJECT_NAME}_php-Application_server"
     build:
       context: .
       dockerfile: ${PWD}/container/php/Dockerfile
-    # user: '${CONTAINERUID}:${CONTAINERGID}'
+    container_name: "${PROJECT_NAME}_php-Application_server"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       # <ホストマシンのポート>:<コンテナのポート>
       - 9003:9003
     volumes:
-      - ${PWD}/src:/var/www
+      - ${PWD}/app:/var/www/app
     restart: always
   nginx:
-    container_name: ${COMPOSE_PROJECT_NAME}-nginx_web_server
-    image: nginx:latest
-    # build:
-    #   context: .
-    #   dockerfile: ${PWD}/container/nginx/Dockerfile
-    # user: '${CONTAINERUID}:${CONTAINERGID}'
+    build:
+      context: .
+      dockerfile: ${PWD}/container/nginx/Dockerfile
+    container_name: ${PROJECT_NAME}-nginx_web_server
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - 8080:80
     volumes:
-      - ${PWD}/src/public:/var/www/public
-    #   - ${PWD}/container/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${PWD}/container/nginx/conf.d:/etc/nginx/conf.d
+      - ${PWD}/app/public:/var/www/app/public
     restart: always
   mariadb:
-    container_name: ${COMPOSE_PROJECT_NAME}_database_server
     image: mariadb:latest
-    # build:
-    #   context: .
-    #   dockerfile: ${PWD}/container/mariadb/Dockerfile
-    # user: '${CONTAINERUID}:${CONTAINERGID}'
+    container_name: ${PROJECT_NAME}_database_server
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -55,12 +45,8 @@ services:
       - ${PWD}/container/mariadb/initdb.d:/docker-entrypoint-initdb.d
     restart: always
   minio:
-    container_name: ${COMPOSE_PROJECT_NAME}-object_storage_server
     image: minio/minio:latest
-    # build:
-    #   context: .
-    #   dockerfile: ${PWD}/container/minio/Dockerfile
-    # user: '${CONTAINERUID}:${CONTAINERGID}'
+    container_name: ${PROJECT_NAME}-object_storage_server
     ports:
       - 9000:9000
       - 9001:9001
@@ -80,7 +66,7 @@ services:
     command: -c "sh /bin/create_backet.sh"
 networks:
   app_net:
-    name: "${COMPOSE_PROJECT_NAME}_network"
+    name: "${PROJECT_NAME}_network"
     driver: bridge
     ipam:
      driver: default
